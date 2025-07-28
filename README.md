@@ -117,6 +117,14 @@ docker-compose up --build -d
 docker-compose down -v
 ```
 
+## 🧭 Documentação Swagger
+
+Após subir a aplicação, a documentação interativa da API está disponível em:
+
+Swagger UI: http://localhost:8080/swagger-ui.html
+
+Spec OpenAPI (JSON): http://localhost:8080/v3/api-docs
+
 ## 🧪 Testes
 
 - **Unitários:** `mvn test` (JUnit 5 + Mockito)

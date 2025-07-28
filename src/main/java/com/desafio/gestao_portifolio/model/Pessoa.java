@@ -16,14 +16,18 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Table(name = "pessoa")
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Pessoa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(length = 100, nullable = false)
@@ -35,20 +39,18 @@ public class Pessoa {
     private String cpf;
 
     @Column(nullable = false)
-    private Boolean funcionario;
+    private boolean funcionario;
 
-    @Column(nullable = false)
-    private Boolean gerente;
+    @Column(nullable = true)
+    private boolean gerente;
 
     @OneToMany(mappedBy = "gerente", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Projeto> projetosGerenciados = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-        name = "membros",
-        joinColumns = @JoinColumn(name = "idpessoa"),
-        inverseJoinColumns = @JoinColumn(name = "idprojeto")
-    )
+   
+    @ManyToMany(mappedBy = "membros")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Projeto> projetos = new HashSet<>();
     
 }

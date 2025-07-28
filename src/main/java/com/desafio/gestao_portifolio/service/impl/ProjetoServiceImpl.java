@@ -1,42 +1,62 @@
 package com.desafio.gestao_portifolio.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.stereotype.Service;
+
+import com.desafio.gestao_portifolio.model.Pessoa;
 import com.desafio.gestao_portifolio.model.Projeto;
 import com.desafio.gestao_portifolio.model.enums.StatusProjeto;
 import com.desafio.gestao_portifolio.repository.ProjetoRepository;
-import com.desafio.gestao_portifolio.service.ProjetoService;
+import com.desafio.gestao_portifolio.service.IPessoaService;
+import com.desafio.gestao_portifolio.service.IProjetoService;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
+@Service
 @AllArgsConstructor
-public class ProjetoServiceImpl implements ProjetoService {
+public class ProjetoServiceImpl implements IProjetoService {
 	
-	private final ProjetoRepository repo;
+	private final ProjetoRepository repositorio;
+	private final IPessoaService pessoaService;
 	
 	@Override
-	public Projeto save(Projeto projeto) {
-		return repo.save(projeto);
-	}
+    @Transactional
+    public Projeto salvar(Projeto projeto, List<Long> membrosId) {
+        Projeto salvo = repositorio.saveAndFlush(projeto);
 
-	@Override
-	public List<Projeto> findAll() {
-		return repo.findAll();
-	}
+        salvo.getMembros().clear();
+        if (membrosId != null) {
+            for (Long mid : membrosId) {
+                Pessoa p = pessoaService.buscarPorId(mid);
+                salvo.addMembro(p);
+            }
+        }
+        return repositorio.save(salvo);
+    }
 
-	@Override
-	public Projeto findById(Long id) {
-		return repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Projeto não encotrado"));
-	}
+    @Override
+    public List<Projeto> listarTodos() {
+        return repositorio.findAll();
+    }
 
-	@Override
-	public void delete(Long id) {
-		Projeto p = findById(id);
-		if (p.getStatus() == StatusProjeto.INICIADO || p.getStatus() ==
-				StatusProjeto.EM_ANDAMENTO || p.getStatus() == StatusProjeto.ENCERRADO) {
-					throw new IllegalStateException("Não é possível excluir projeto iniciado, em andamento ou encerrado");
-		}
-		repo.delete(p);
-	}
+    @Override
+    public Projeto buscarPorId(Long id) {
+        return repositorio.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Projeto não encontrado"));
+    }
+
+    @Override
+    public void excluir(Long id) {
+        Projeto projeto = buscarPorId(id);
+        if (projeto.getStatus() == StatusProjeto.INICIADO || projeto.getStatus() == StatusProjeto.EM_ANDAMENTO || projeto.getStatus() == StatusProjeto.ENCERRADO) {
+            throw new IllegalStateException("Não é possível excluir projeto iniciado, em andamento ou encerrado");
+        }
+        repositorio.delete(projeto);
+    }
+
 
 }

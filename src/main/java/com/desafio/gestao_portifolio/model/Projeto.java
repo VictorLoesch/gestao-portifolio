@@ -16,18 +16,23 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Table(name = "projeto")
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Projeto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(length = 200, nullable = false)
@@ -52,15 +57,23 @@ public class Projeto {
     @Column(length = 45)
     private NivelRisco risco;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = true)
     @JoinColumn(name = "idgerente", nullable = false, foreignKey = @ForeignKey(name = "fk_gerente"))
+    @ToString.Exclude
     private Pessoa gerente;
 
-    @ManyToMany(mappedBy = "projetos")
+    @ManyToMany
+    @JoinTable(
+      name = "membros",                            
+      joinColumns = @JoinColumn(name = "idprojeto"),
+      inverseJoinColumns = @JoinColumn(name = "idpessoa")
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Pessoa> membros = new HashSet<>();
 
     public void addMembro(Pessoa p) {
-        if (!membros.contains(p) && Boolean.TRUE.equals(p.getFuncionario())) {
+        if (!membros.contains(p) && Boolean.TRUE.equals(p.isFuncionario())) {
             membros.add(p);
             p.getProjetos().add(this);
         }

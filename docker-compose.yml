@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16    
+    container_name: pg_gestao
+    environment:
+      POSTGRES_DB: gestao_portifolio
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"       
+
+  app:
+    build: .
+    container_name: app_gestao
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gestao_portifolio
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_MVC_VIEW_PREFIX: /WEB-INF/jsp/
+      SPRING_MVC_VIEW_SUFFIX: .jsp
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:

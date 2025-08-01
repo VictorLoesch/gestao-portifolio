@@ -57,7 +57,6 @@ public class Projeto {
     private StatusProjeto status;
 
     @Positive(message = "O orçamento deve ser maior que zero")
-    @Column(nullable = false)
     private Float orcamento;
 
     @Enumerated(EnumType.STRING)

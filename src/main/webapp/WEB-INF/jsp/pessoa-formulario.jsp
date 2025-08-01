@@ -25,7 +25,6 @@
       <div class="mb-3">
         <label for="cpf">CPF</label>
         <form:input path="cpf" cssClass="form-control" id="cpf"/>
-        <form:errors path="cpf" cssClass="text-danger"/>
       </div>
 
       <div class="mb-3">

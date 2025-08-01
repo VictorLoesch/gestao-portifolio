@@ -37,8 +37,7 @@ public class Pessoa {
 
     private LocalDate dataNascimento;
 
-    @NotBlank(message = "O CPF é obrigatório")
-    @Column(length = 14, unique = true)
+    @Column(length = 14)
     private String cpf;
 
     @Column(nullable = false)

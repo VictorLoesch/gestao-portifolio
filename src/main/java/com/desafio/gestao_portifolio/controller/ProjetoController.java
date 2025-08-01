@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,8 @@ import com.desafio.gestao_portifolio.model.enums.NivelRisco;
 import com.desafio.gestao_portifolio.model.enums.StatusProjeto;
 import com.desafio.gestao_portifolio.service.IPessoaService;
 import com.desafio.gestao_portifolio.service.IProjetoService;
+
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -63,11 +66,37 @@ public class ProjetoController {
     
     @PostMapping
     public String salvar(
-        @ModelAttribute Projeto projetoForm,
+        @Valid @ModelAttribute("projeto") Projeto projeto,
+        BindingResult result,
         @RequestParam(value="membrosId", required=false) List<Long> membrosId,
+        Model model,
         RedirectAttributes ra
     ) {
-        projetoService.salvar(projetoForm, membrosId);
+        if (projeto.getGerente() == null || projeto.getGerente().getId() == null) {
+            result.rejectValue(
+                "gerente",             
+                "NotNull",             
+                "O gerente é obrigatório" 
+            );
+        }
+
+        if (result.hasErrors()) {
+            model.addAttribute("gerentes",
+                pessoaService.listarTodos().stream()
+                  .filter(Pessoa::isGerente)
+                  .toList()
+            );
+            model.addAttribute("statusList", StatusProjeto.values());
+            model.addAttribute("nivelRiscoList", NivelRisco.values());
+            model.addAttribute("membrosPossiveis",
+                pessoaService.listarTodos().stream()
+                  .filter(Pessoa::isFuncionario)
+                  .toList()
+            );
+            return "projeto-formulario";
+        }
+
+        projetoService.salvar(projeto, membrosId);
         ra.addFlashAttribute("sucesso", "Projeto salvo com sucesso!");
         return "redirect:/projetos";
     }

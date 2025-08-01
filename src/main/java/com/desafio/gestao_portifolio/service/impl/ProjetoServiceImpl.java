@@ -1,9 +1,6 @@
 package com.desafio.gestao_portifolio.service.impl;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.springframework.stereotype.Service;
 
 import com.desafio.gestao_portifolio.model.Pessoa;
@@ -13,7 +10,7 @@ import com.desafio.gestao_portifolio.repository.ProjetoRepository;
 import com.desafio.gestao_portifolio.service.IPessoaService;
 import com.desafio.gestao_portifolio.service.IProjetoService;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -31,8 +28,8 @@ public class ProjetoServiceImpl implements IProjetoService {
         salvo.getMembros().clear();
         if (membrosId != null) {
             for (Long mid : membrosId) {
-                Pessoa p = pessoaService.buscarPorId(mid);
-                salvo.addMembro(p);
+                Pessoa membro = pessoaService.buscarPorId(mid);
+                salvo.addMembro(membro);
             }
         }
         return repositorio.save(salvo);

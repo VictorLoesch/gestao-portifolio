@@ -1,5 +1,6 @@
 <%@ include file="header.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <h2 class="mb-4">
   <c:choose>
@@ -8,16 +9,18 @@
   </c:choose>
 </h2>
 
-<form action="${pageContext.request.contextPath}/projetos" method="post">
-  
+<form:form action="${pageContext.request.contextPath}/projetos"
+           modelAttribute="projeto" method="post" cssClass="needs-validation">
+           
+ <form:hidden path="id"/> 
   <c:if test="${not empty projeto.id}">
     <input type="hidden" name="id" value="${projeto.id}" />
   </c:if>
 
   <div class="mb-3">
     <label for="nome" class="form-label">Nome</label>
-    <input type="text" id="nome" name="nome"
-           value="${projeto.nome}" class="form-control" required />
+    <form:input path="nome" id="nome" cssClass="form-control" />
+	<form:errors path="nome" cssClass="text-danger"/>           
   </div>
 
   <div class="mb-3">
@@ -48,6 +51,7 @@
     <label for="orcamento" class="form-label">Orçamento (R$)</label>
     <input type="number" step="0.01" id="orcamento" name="orcamento"
            value="${projeto.orcamento}" class="form-control" />
+    <form:errors path="orcamento" cssClass="text-danger"/>
   </div>
 
   <div class="mb-3">
@@ -76,16 +80,13 @@
 
   <div class="mb-3">
     <label for="gerente" class="form-label">Gerente</label>
-    <select id="gerente" name="gerente.id" class="form-select">
+    <form:select path="gerente.id" id="gerente" cssClass="form-select">
+      <form:option value="" label="-- selecione --"/>
       <c:forEach var="g" items="${gerentes}">
-        <option value="${g.id}"
-          <c:if test="${projeto.gerente != null and g.id eq projeto.gerente.id}">
-            selected
-          </c:if>>
-          ${g.nome}
-        </option>
+        <form:option value="${g.id}" label="${g.nome}"/>
       </c:forEach>
-    </select>
+    </form:select>
+    <form:errors path="gerente" cssClass="text-danger"/>
   </div>
 
   <div class="mb-3">
@@ -133,6 +134,6 @@
     <a href="${pageContext.request.contextPath}/projetos"
        class="btn btn-secondary">Cancelar</a>
   </div>
-</form>
+</form:form>
 
 <%@ include file="footer.jspf" %>

@@ -11,6 +11,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +21,9 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -35,6 +39,7 @@ public class Projeto {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @NotBlank(message = "O nome do projeto é obrigatório")
     @Column(length = 200, nullable = false)
     private String nome;
 
@@ -51,13 +56,16 @@ public class Projeto {
     @Column(name = "status", length = 45)
     private StatusProjeto status;
 
+    @Positive(message = "O orçamento deve ser maior que zero")
+    @Column(nullable = false)
     private Float orcamento;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 45)
     private NivelRisco risco;
 
-    @ManyToOne(optional = true)
+    @NotNull(message = "O gerente é obrigatório")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "idgerente", nullable = false, foreignKey = @ForeignKey(name = "fk_gerente"))
     @ToString.Exclude
     private Pessoa gerente;

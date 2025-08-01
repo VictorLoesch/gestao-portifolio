@@ -15,6 +15,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,12 +31,14 @@ public class Pessoa {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @NotBlank(message = "O nome é obrigatório")
     @Column(length = 100, nullable = false)
     private String nome;
 
     private LocalDate dataNascimento;
 
-    @Column(length = 14)
+    @NotBlank(message = "O CPF é obrigatório")
+    @Column(length = 14, unique = true)
     private String cpf;
 
     @Column(nullable = false)

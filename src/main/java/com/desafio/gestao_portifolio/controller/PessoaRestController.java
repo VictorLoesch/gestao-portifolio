@@ -8,6 +8,7 @@ import com.desafio.gestao_portifolio.model.Pessoa;
 import com.desafio.gestao_portifolio.service.impl.PessoaServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -22,12 +23,12 @@ public class PessoaRestController {
 	      summary = "Cria uma nova pessoa",
 	      description = "Recebe o corpo JSON com dados de Pessoa e devolve o objeto persistido",
 	      responses = {
-	        @ApiResponse(responseCode = "200", description = "Pessoa criada com sucesso"),
+	        @ApiResponse(responseCode = "201", description = "Pessoa criada com sucesso"),
 	        @ApiResponse(responseCode = "400", description = "Dados inválidos")
 	      }
 	)
 	@PostMapping
-	private Pessoa salvarPessoa(@RequestBody Pessoa pessoa) {
+	private Pessoa salvarPessoa(@Valid @RequestBody Pessoa pessoa) {
 		return pessoaService.salvar(pessoa);
 	}
 }
